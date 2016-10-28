@@ -20,9 +20,9 @@ module ShopifyAPI
   end
 
   class VaultSession < Base
-    self.site = "https://elb.deposit.shopifycs.com"
     self.element_name = "session"
-    self.include_format_in_path = false
     self.format = VaultSessionFormat
+    self.include_format_in_path = false
+    self.site = "https://elb.deposit.shopifycs.com"
   end
 end

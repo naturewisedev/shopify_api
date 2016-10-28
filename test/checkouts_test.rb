@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class CheckoutsTest < Test::Unit::TestCase
+  def setup
+    super
+    ShopifyAPI::VaultSession.format = ShopifyAPI::VaultSessionFormat
+  end
+
   test "get all should get all orders" do
     fake 'checkouts', :method => :get, :status => 200, :body => load_fixture('checkouts')
     checkout = ShopifyAPI::Checkout.all
@@ -33,12 +38,11 @@ class CheckoutsTest < Test::Unit::TestCase
     assert_equal "exuw7apwoycchjuwtiqg8nytfhphr62a", checkout.token
   end
 
-  def test_pay_using_a_credit_card
-  # test "create a new payment using a payment session" do
+  test "test pay using a credit card" do
     vault_url = "#{ShopifyAPI::VaultSession.site}#{ShopifyAPI::VaultSession.collection_path}"
-    binding.pry
+
     fake "vault_session", method: :post, status: 201, url: vault_url, body: load_fixture("vault_session")
-    fake "checkout/exuw7apwoycchjuwtiqg8nytfhphr62a/payments", method: :post, status: 201,
+    fake "checkouts/exuw7apwoycchjuwtiqg8nytfhphr62a/payments", method: :post, status: 201,
       body: load_fixture("checkout_payment")
 
     params = {
@@ -56,18 +60,10 @@ class CheckoutsTest < Test::Unit::TestCase
       }
     }
 
-    checkout = ShopifyAPI::Checkout.new(id: "exuw7apwoycchjuwtiqg8nytfhphr62a")
+    checkout = ShopifyAPI::Checkout.new(token: "exuw7apwoycchjuwtiqg8nytfhphr62a")
     checkout.pay(params) do |payment|
       assert_equal 123456789, payment.id
       assert_equal "my_idempotency_token", payment.unique_token
     end
   end
-
-
-  # def "create a new checkout"
-  #
-  # test "post a payment using a vaulted session" do
-  #   fake "vault_session", method: :post, status: 201, body: load_fixture("vault_session")
-  #   fake "checkout_payment", method: :post, status: 202, body: load_fixture("checkout_payment")
-  # end
 end
