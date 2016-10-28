@@ -35,8 +35,9 @@ class CheckoutsTest < Test::Unit::TestCase
 
   def test_pay_using_a_credit_card
   # test "create a new payment using a payment session" do
-    fake "vault_session", method: :post, status: 201,
-      url: ShopifyAPI::VaultSession.collection_path, body: load_fixture("vault_session")
+    vault_url = "#{ShopifyAPI::VaultSession.site}#{ShopifyAPI::VaultSession.collection_path}"
+    binding.pry
+    fake "vault_session", method: :post, status: 201, url: vault_url, body: load_fixture("vault_session")
     fake "checkout/exuw7apwoycchjuwtiqg8nytfhphr62a/payments", method: :post, status: 201,
       body: load_fixture("checkout_payment")
 
@@ -57,7 +58,8 @@ class CheckoutsTest < Test::Unit::TestCase
 
     checkout = ShopifyAPI::Checkout.new(id: "exuw7apwoycchjuwtiqg8nytfhphr62a")
     checkout.pay(params) do |payment|
-      assert_equal 1, 2
+      assert_equal 123456789, payment.id
+      assert_equal "my_idempotency_token", payment.unique_token
     end
   end
 
