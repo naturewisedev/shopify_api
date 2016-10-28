@@ -5,6 +5,7 @@ require 'mocha/setup'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require "pry-byebug"
 require 'shopify_api'
 
 FakeWeb.allow_net_connect = false
